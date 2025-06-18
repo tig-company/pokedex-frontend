@@ -12,8 +12,13 @@ interface PokemonWithDetails extends PokemonListItem {
   types: string[];
 }
 
-export function PokemonList() {
+interface PokemonListProps {
+  searchQuery?: string;
+}
+
+export function PokemonList({ searchQuery = '' }: PokemonListProps) {
   const [pokemon, setPokemon] = useState<PokemonWithDetails[]>([]);
+  const [filteredPokemon, setFilteredPokemon] = useState<PokemonWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
@@ -55,6 +60,18 @@ export function PokemonList() {
     loadPokemon(0);
   }, []);
 
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredPokemon(pokemon);
+    } else {
+      const filtered = pokemon.filter(poke => 
+        poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        poke.types.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+      setFilteredPokemon(filtered);
+    }
+  }, [searchQuery, pokemon]);
+
   const loadMore = () => {
     const newOffset = offset + 20;
     setOffset(newOffset);
@@ -62,10 +79,14 @@ export function PokemonList() {
   };
 
   const sentinelRef = useInfiniteScroll(loadMore, {
-    hasMore,
+    hasMore: hasMore && !searchQuery.trim(),
     loading,
     threshold: 100,
   });
+
+  const displayPokemon = filteredPokemon;
+  const isSearchActive = searchQuery.trim().length > 0;
+  const showInfiniteScroll = !isSearchActive && hasMore;
 
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
@@ -107,12 +128,24 @@ export function PokemonList() {
 
   return (
     <div>
+      {isSearchActive && (
+        <div className="mb-6">
+          <p className="text-gray-600 dark:text-gray-400 text-center">
+            {displayPokemon.length === 0 ? (
+              `No Pokémon found matching "${searchQuery}"`
+            ) : (
+              `Found ${displayPokemon.length} Pokémon matching "${searchQuery}"`
+            )}
+          </p>
+        </div>
+      )}
+
       <div 
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
         role="grid"
         aria-label="Pokemon list"
       >
-        {pokemon.map((poke) => (
+        {displayPokemon.map((poke) => (
           <Link
             key={poke.id}
             href={`/pokemon/${poke.id}`}
@@ -155,7 +188,7 @@ export function PokemonList() {
         ))}
       </div>
 
-      {hasMore && (
+      {showInfiniteScroll && (
         <div 
           ref={sentinelRef}
           className="flex justify-center items-center py-12"
@@ -175,7 +208,7 @@ export function PokemonList() {
         </div>
       )}
 
-      {!loading && !hasMore && (
+      {!loading && !hasMore && !isSearchActive && (
         <div 
           className="text-center mt-12"
           role="status"
