@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getPokemonList, getPokemon, getPokemonIdFromUrl, type PokemonListItem } from '@/lib/pokemon-api';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 
 interface PokemonWithDetails extends PokemonListItem {
   id: number;
@@ -60,6 +61,12 @@ export function PokemonList() {
     loadPokemon(newOffset);
   };
 
+  const sentinelRef = useInfiniteScroll(loadMore, {
+    hasMore,
+    loading,
+    threshold: 100,
+  });
+
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       normal: 'bg-gray-400',
@@ -100,7 +107,11 @@ export function PokemonList() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+      <div 
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+        role="grid"
+        aria-label="Pokemon list"
+      >
         {pokemon.map((poke) => (
           <Link
             key={poke.id}
@@ -144,26 +155,32 @@ export function PokemonList() {
         ))}
       </div>
 
-      {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading Pokémon...</p>
-        </div>
-      )}
-
-      {!loading && hasMore && (
-        <div className="text-center mt-12">
-          <button
-            onClick={loadMore}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl"
-          >
-            Load More Pokémon
-          </button>
+      {hasMore && (
+        <div 
+          ref={sentinelRef}
+          className="flex justify-center items-center py-12"
+          aria-label="Loading more Pokemon"
+          role="status"
+          aria-live="polite"
+        >
+          {loading && (
+            <>
+              <div 
+                className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
+                aria-hidden="true"
+              ></div>
+              <p className="ml-4 text-gray-600 dark:text-gray-400">Loading more Pokémon...</p>
+            </>
+          )}
         </div>
       )}
 
       {!loading && !hasMore && (
-        <div className="text-center mt-12">
+        <div 
+          className="text-center mt-12"
+          role="status"
+          aria-live="polite"
+        >
           <p className="text-gray-600 dark:text-gray-400">
             You&apos;ve seen all the Pokémon! 🎉
           </p>
