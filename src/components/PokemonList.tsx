@@ -3,20 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getPokemonList, getPokemon, getPokemonIdFromUrl, type PokemonListItem } from '@/lib/pokemon-api';
+import { getPokemonList, getPokemonWithDetails, getPokemonIdFromUrl, type PokemonListItem, type PokemonWithDetails } from '@/lib/pokemon-api';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-
-interface PokemonWithDetails extends PokemonListItem {
-  id: number;
-  image: string;
-  types: string[];
-}
 
 interface PokemonListProps {
   searchQuery?: string;
+  filteredPokemon?: PokemonWithDetails[];
+  isFiltering?: boolean;
 }
 
-export function PokemonList({ searchQuery = '' }: PokemonListProps) {
+export function PokemonList({ searchQuery = '', filteredPokemon: externalFilteredPokemon, isFiltering = false }: PokemonListProps) {
   const [pokemon, setPokemon] = useState<PokemonWithDetails[]>([]);
   const [filteredPokemon, setFilteredPokemon] = useState<PokemonWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,13 +28,7 @@ export function PokemonList({ searchQuery = '' }: PokemonListProps) {
       const pokemonWithDetails = await Promise.all(
         listResponse.results.map(async (item: PokemonListItem) => {
           const id = getPokemonIdFromUrl(item.url);
-          const details = await getPokemon(id);
-          return {
-            ...item,
-            id,
-            image: details.sprites.other['official-artwork'].front_default || details.sprites.front_default || '',
-            types: details.types.map(t => t.type.name)
-          };
+          return await getPokemonWithDetails(id);
         })
       );
 
@@ -61,16 +51,30 @@ export function PokemonList({ searchQuery = '' }: PokemonListProps) {
   }, []);
 
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredPokemon(pokemon);
+    if (isFiltering && externalFilteredPokemon) {
+      // When filtering is active, use externally filtered Pokemon
+      if (!searchQuery.trim()) {
+        setFilteredPokemon(externalFilteredPokemon);
+      } else {
+        const searchFiltered = externalFilteredPokemon.filter(poke => 
+          poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          poke.types.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+        setFilteredPokemon(searchFiltered);
+      }
     } else {
-      const filtered = pokemon.filter(poke => 
-        poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        poke.types.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
-      setFilteredPokemon(filtered);
+      // When no filtering is active, use all Pokemon with search
+      if (!searchQuery.trim()) {
+        setFilteredPokemon(pokemon);
+      } else {
+        const filtered = pokemon.filter(poke => 
+          poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          poke.types.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
+        );
+        setFilteredPokemon(filtered);
+      }
     }
-  }, [searchQuery, pokemon]);
+  }, [searchQuery, pokemon, externalFilteredPokemon, isFiltering]);
 
   const loadMore = () => {
     const newOffset = offset + 20;
@@ -79,15 +83,14 @@ export function PokemonList({ searchQuery = '' }: PokemonListProps) {
   };
 
   const sentinelRef = useInfiniteScroll(loadMore, {
-    hasMore: hasMore && !searchQuery.trim(),
+    hasMore: hasMore && !searchQuery.trim() && !isFiltering,
     loading,
     threshold: 100,
   });
 
   const displayPokemon = filteredPokemon;
   const isSearchActive = searchQuery.trim().length > 0;
-  const showInfiniteScroll = !isSearchActive && hasMore;
-
+  const showInfiniteScroll = !isSearchActive && !isFiltering && hasMore;
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       normal: 'bg-gray-400',
@@ -128,13 +131,15 @@ export function PokemonList({ searchQuery = '' }: PokemonListProps) {
 
   return (
     <div>
-      {isSearchActive && (
+      {(isSearchActive || isFiltering) && (
         <div className="mb-6">
           <p className="text-gray-600 dark:text-gray-400 text-center">
             {displayPokemon.length === 0 ? (
-              `No Pokémon found matching "${searchQuery}"`
+              isSearchActive ? `No Pokémon found matching "${searchQuery}"` : 'No Pokémon match your filters'
             ) : (
-              `Found ${displayPokemon.length} Pokémon matching "${searchQuery}"`
+              isSearchActive 
+                ? `Found ${displayPokemon.length} Pokémon matching "${searchQuery}"`
+                : `${displayPokemon.length} Pokémon match your filters`
             )}
           </p>
         </div>
@@ -208,7 +213,7 @@ export function PokemonList({ searchQuery = '' }: PokemonListProps) {
         </div>
       )}
 
-      {!loading && !hasMore && !isSearchActive && (
+      {!loading && !hasMore && !isSearchActive && !isFiltering && (
         <div 
           className="text-center mt-12"
           role="status"
