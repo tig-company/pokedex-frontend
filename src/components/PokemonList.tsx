@@ -87,7 +87,6 @@ export function PokemonList({ searchQuery = '' }: PokemonListProps) {
   const displayPokemon = filteredPokemon;
   const isSearchActive = searchQuery.trim().length > 0;
   const showInfiniteScroll = !isSearchActive && hasMore;
-
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       normal: 'bg-gray-400',

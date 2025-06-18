@@ -7,6 +7,13 @@ interface PokemonPageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateStaticParams() {
+  // Generate static params for the first 151 Pokemon (original set)
+  return Array.from({ length: 151 }, (_, i) => ({
+    id: String(i + 1),
+  }));
+}
+
 export default async function PokemonPage({ params }: PokemonPageProps) {
   const { id } = await params;
   
