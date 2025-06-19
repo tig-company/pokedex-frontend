@@ -87,7 +87,7 @@ export function FilterSidepanel({
                    shadow-xl transform transition-transform duration-300 ease-in-out z-50
                    ${isOpen ? 'translate-x-0' : '-translate-x-full'}
                    lg:relative lg:translate-x-0 lg:shadow-none lg:border-r 
-                   lg:border-gray-200 lg:dark:border-gray-700`}
+                   lg:border-gray-200 lg:dark:border-gray-700 lg:h-full lg:flex lg:flex-col`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
@@ -116,7 +116,7 @@ export function FilterSidepanel({
         </div>
 
         {/* Filter controls */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex-shrink-0 p-4 border-b border-gray-200 dark:border-gray-700">
           <button
             onClick={resetFilters}
             disabled={!hasActiveFilters()}
@@ -131,7 +131,7 @@ export function FilterSidepanel({
         </div>
 
         {/* Filter sections */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           <div className="p-4 space-y-6">
             {/* Section navigation */}
             <div className="flex flex-wrap gap-2">
@@ -189,7 +189,7 @@ export function FilterSidepanel({
 
         {/* Active filters summary */}
         {hasActiveFilters() && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+          <div className="flex-shrink-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
             <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
               Active Filters:
             </h4>

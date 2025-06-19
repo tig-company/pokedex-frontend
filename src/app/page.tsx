@@ -52,8 +52,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="flex">
+    <div className="h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="flex h-full">
         {/* Filter Sidepanel */}
         <FilterSidepanel
           filters={filters}
@@ -64,7 +64,7 @@ export default function Home() {
         />
         
         {/* Main Content */}
-        <div className="flex-1 lg:ml-0">
+        <div className="flex-1 lg:ml-0 overflow-y-auto">
           <div className="container mx-auto px-4 py-8">
             <header className="text-center mb-12">
               <h1 className="text-5xl font-bold text-gray-800 dark:text-white mb-4">
