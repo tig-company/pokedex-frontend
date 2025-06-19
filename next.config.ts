@@ -1,5 +1,23 @@
 import type { NextConfig } from "next";
 
+// Function to determine the correct base path based on environment
+function getBasePath(): string {
+  // For PR preview deployments
+  if (process.env.PR_PREVIEW === 'true' && process.env.PR_NUMBER) {
+    return `/pokedex-frontend/pr-${process.env.PR_NUMBER}`;
+  }
+  
+  // For production GitHub Pages deployment
+  if (process.env.GITHUB_PAGES === 'true') {
+    return '/pokedex-frontend';
+  }
+  
+  // For local development
+  return '';
+}
+
+const basePath = getBasePath();
+
 const nextConfig: NextConfig = {
   images: {
     domains: ['raw.githubusercontent.com'],
@@ -8,8 +26,8 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
   distDir: 'out',
-  assetPrefix: process.env.GITHUB_PAGES === 'true' ? '/pokedex-frontend' : '',
-  basePath: process.env.GITHUB_PAGES === 'true' ? '/pokedex-frontend' : '',
+  assetPrefix: basePath,
+  basePath: basePath,
 };
 
 export default nextConfig;
