@@ -44,8 +44,21 @@ jobs:
       env:
         NODE_ENV: production
         
-    - name: Add .nojekyll file
-      run: touch out/.nojekyll
+    - name: Verify build and add .nojekyll file
+      run: |
+        echo "Current directory contents:"
+        ls -la
+        echo "Checking for out directory..."
+        if [ -d "out" ]; then
+          echo "✓ out directory exists"
+          ls -la out/ | head -5
+        else
+          echo "✗ out directory not found"
+        fi
+        echo "Creating .nojekyll file..."
+        mkdir -p out
+        touch out/.nojekyll
+        echo "✓ .nojekyll file created"
       
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
