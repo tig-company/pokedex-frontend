@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
   distDir: 'out',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/pokedex-frontend' : '',
-  basePath: process.env.NODE_ENV === 'production' ? '/pokedex-frontend' : '',
+  assetPrefix: process.env.GITHUB_PAGES === 'true' ? '/pokedex-frontend' : '',
+  basePath: process.env.GITHUB_PAGES === 'true' ? '/pokedex-frontend' : '',
 };
 
 export default nextConfig;
