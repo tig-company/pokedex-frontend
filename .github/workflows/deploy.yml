@@ -44,27 +44,8 @@ jobs:
       env:
         NODE_ENV: production
         
-    - name: Verify build output and add .nojekyll file
-      run: |
-        if [ ! -d "out" ]; then
-          echo "Error: Build output directory 'out' not found!"
-          echo "Current directory contents:"
-          ls -la
-          exit 1
-        fi
-        echo "Build output directory verified"
-        echo "Adding .nojekyll file for GitHub Pages compatibility..."
-        touch out/.nojekyll
-        
-        if [ ! -f "out/.nojekyll" ]; then
-          echo "Error: Failed to create .nojekyll file!"
-          exit 1
-        fi
-        
-        echo "✓ .nojekyll file created successfully"
-        echo "Final verification - checking critical files:"
-        echo "- index.html: $([ -f "out/index.html" ] && echo "✓ exists" || echo "✗ missing")"
-        echo "- .nojekyll: $([ -f "out/.nojekyll" ] && echo "✓ exists" || echo "✗ missing")"
+    - name: Add .nojekyll file
+      run: touch out/.nojekyll
       
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
