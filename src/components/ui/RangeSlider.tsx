@@ -19,7 +19,7 @@ export function RangeSlider({
   step = 1,
   label,
   onChange,
-  formatValue = (val) => val.toString(),
+  formatValue = val => val.toString(),
 }: RangeSliderProps) {
   const [localValue, setLocalValue] = useState(value);
 
@@ -58,7 +58,7 @@ export function RangeSlider({
           {formatValue(localValue.min)} - {formatValue(localValue.max)}
         </span>
       </div>
-      
+
       <div className="relative">
         <div className="relative h-6 bg-gray-200 dark:bg-gray-700 rounded-lg">
           {/* Track highlight */}
@@ -69,7 +69,7 @@ export function RangeSlider({
               width: `${maxPercent - minPercent}%`,
             }}
           />
-          
+
           {/* Min thumb */}
           <input
             type="range"
@@ -77,12 +77,12 @@ export function RangeSlider({
             max={max}
             step={step}
             value={localValue.min}
-            onChange={(e) => handleMinChange(Number(e.target.value))}
+            onChange={e => handleMinChange(Number(e.target.value))}
             className="absolute w-full h-6 bg-transparent appearance-none cursor-pointer range-slider"
             style={{ zIndex: 1 }}
             aria-label={`${label} minimum value`}
           />
-          
+
           {/* Max thumb */}
           <input
             type="range"
@@ -90,19 +90,19 @@ export function RangeSlider({
             max={max}
             step={step}
             value={localValue.max}
-            onChange={(e) => handleMaxChange(Number(e.target.value))}
+            onChange={e => handleMaxChange(Number(e.target.value))}
             className="absolute w-full h-6 bg-transparent appearance-none cursor-pointer range-slider"
             style={{ zIndex: 2 }}
             aria-label={`${label} maximum value`}
           />
         </div>
       </div>
-      
+
       <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
         <span>{formatValue(min)}</span>
         <span>{formatValue(max)}</span>
       </div>
-      
+
       <style jsx global>{`
         .range-slider::-webkit-slider-thumb {
           appearance: none;
@@ -114,7 +114,7 @@ export function RangeSlider({
           cursor: pointer;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
         }
-        
+
         .range-slider::-moz-range-thumb {
           height: 20px;
           width: 20px;
@@ -125,11 +125,11 @@ export function RangeSlider({
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
           border: none;
         }
-        
+
         .range-slider::-webkit-slider-track {
           background: transparent;
         }
-        
+
         .range-slider::-moz-range-track {
           background: transparent;
         }

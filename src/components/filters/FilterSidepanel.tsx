@@ -1,12 +1,15 @@
 'use client';
 
+import {
+  XMarkIcon,
+  AdjustmentsHorizontalIcon,
+} from '@heroicons/react/24/outline';
 import { useState } from 'react';
-import { XMarkIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
 import { type PokemonFilters, defaultFilters } from '@/lib/pokemon-api';
-import { TypeFilter } from './TypeFilter';
 import { GenerationFilter } from './GenerationFilter';
-import { StatsFilter } from './StatsFilter';
 import { PhysicalAttributesFilter } from './PhysicalAttributesFilter';
+import { StatsFilter } from './StatsFilter';
+import { TypeFilter } from './TypeFilter';
 
 interface FilterSidepanelProps {
   filters: PokemonFilters;
@@ -33,7 +36,10 @@ export function FilterSidepanel({
     onFiltersChange({ ...filters, generation });
   };
 
-  const handleStatsChange = (statName: string, value: { min: number; max: number }) => {
+  const handleStatsChange = (
+    statName: string,
+    value: { min: number; max: number },
+  ) => {
     onFiltersChange({
       ...filters,
       stats: { ...filters.stats, [statName]: value },
@@ -58,7 +64,8 @@ export function FilterSidepanel({
       filters.types.length > 0 ||
       filters.generation !== null ||
       JSON.stringify(filters.stats) !== JSON.stringify(defaultFilters.stats) ||
-      JSON.stringify(filters.height) !== JSON.stringify(defaultFilters.height) ||
+      JSON.stringify(filters.height) !==
+        JSON.stringify(defaultFilters.height) ||
       JSON.stringify(filters.weight) !== JSON.stringify(defaultFilters.weight)
     );
   };
@@ -97,7 +104,7 @@ export function FilterSidepanel({
               Filters
             </h2>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {resultsCount !== undefined && (
               <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -106,7 +113,7 @@ export function FilterSidepanel({
             )}
             <button
               onClick={onClose}
-              className="lg:hidden p-1 text-gray-500 hover:text-gray-700 
+              className="lg:hidden p-1 text-gray-500 hover:text-gray-700
                          dark:text-gray-400 dark:hover:text-gray-200"
               aria-label="Close filters"
             >
@@ -135,17 +142,20 @@ export function FilterSidepanel({
           <div className="p-4 space-y-6">
             {/* Section navigation */}
             <div className="flex flex-wrap gap-2">
-              {sections.map((section) => (
+              {sections.map(section => (
                 <button
                   key={section.id}
-                  onClick={() => setActiveSection(
-                    activeSection === section.id ? null : section.id
-                  )}
+                  onClick={() =>
+                    setActiveSection(
+                      activeSection === section.id ? null : section.id,
+                    )
+                  }
                   className={`px-3 py-1 text-sm font-medium rounded-full transition-colors
-                             ${activeSection === section.id
-                               ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                               : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                             }`}
+                             ${
+                activeSection === section.id
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
                 >
                   {section.label}
                 </button>
@@ -160,21 +170,21 @@ export function FilterSidepanel({
                   onTypesChange={handleTypesChange}
                 />
               )}
-              
+
               {activeSection === 'generation' && (
                 <GenerationFilter
                   selectedGeneration={filters.generation}
                   onGenerationChange={handleGenerationChange}
                 />
               )}
-              
+
               {activeSection === 'stats' && (
                 <StatsFilter
                   stats={filters.stats}
                   onStatsChange={handleStatsChange}
                 />
               )}
-              
+
               {activeSection === 'physical' && (
                 <PhysicalAttributesFilter
                   height={filters.height}

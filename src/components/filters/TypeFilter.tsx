@@ -1,7 +1,7 @@
 'use client';
 
-import { POKEMON_TYPES } from '@/lib/pokemon-api';
 import { MultiSelect } from '@/components/ui/MultiSelect';
+import { POKEMON_TYPES } from '@/lib/pokemon-api';
 
 interface TypeFilterProps {
   selectedTypes: string[];
@@ -44,7 +44,7 @@ export function TypeFilter({ selectedTypes, onTypesChange }: TypeFilterProps) {
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
         Pokémon Types
       </h3>
-      
+
       <MultiSelect
         options={typeOptions}
         value={selectedTypes}
@@ -53,12 +53,11 @@ export function TypeFilter({ selectedTypes, onTypesChange }: TypeFilterProps) {
         label="Filter by type"
         maxDisplayedItems={2}
       />
-      
+
       <div className="text-xs text-gray-500 dark:text-gray-400">
         {selectedTypes.length === 0
           ? 'No type filters applied'
-          : `Filtering by ${selectedTypes.length} type${selectedTypes.length > 1 ? 's' : ''}`
-        }
+          : `Filtering by ${selectedTypes.length} type${selectedTypes.length > 1 ? 's' : ''}`}
       </div>
     </div>
   );

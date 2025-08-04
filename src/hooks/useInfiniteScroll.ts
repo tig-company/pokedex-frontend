@@ -9,7 +9,7 @@ interface UseInfiniteScrollOptions {
 
 export function useInfiniteScroll(
   loadMore: () => void,
-  options: UseInfiniteScrollOptions
+  options: UseInfiniteScrollOptions,
 ) {
   const { hasMore, loading, threshold = 100 } = options;
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -24,19 +24,19 @@ export function useInfiniteScroll(
   const handleIntersection = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
-      
-      if (entry.isIntersecting && hasMore && !loading) {
+
+      if (entry && entry.isIntersecting && hasMore && !loading) {
         // Throttle rapid intersection events
         if (throttleRef.current) {
           clearTimeout(throttleRef.current);
         }
-        
+
         throttleRef.current = setTimeout(() => {
           loadMoreRef.current();
         }, 100);
       }
     },
-    [hasMore, loading]
+    [hasMore, loading],
   );
 
   useEffect(() => {

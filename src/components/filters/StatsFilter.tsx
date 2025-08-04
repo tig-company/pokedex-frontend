@@ -12,7 +12,10 @@ interface StatsFilterProps {
     speed: { min: number; max: number };
     total: { min: number; max: number };
   };
-  onStatsChange: (statName: string, value: { min: number; max: number }) => void;
+  onStatsChange: (
+    statName: string,
+    value: { min: number; max: number }
+  ) => void;
 }
 
 export function StatsFilter({ stats, onStatsChange }: StatsFilterProps) {
@@ -31,24 +34,26 @@ export function StatsFilter({ stats, onStatsChange }: StatsFilterProps) {
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
         Base Stats
       </h3>
-      
+
       <div className="space-y-4">
-        {statConfigs.map((config) => (
+        {statConfigs.map(config => (
           <RangeSlider
             key={config.key}
             min={config.min}
             max={config.max}
             value={stats[config.key as keyof typeof stats]}
             label={config.label}
-            onChange={(value) => onStatsChange(config.key, value)}
+            onChange={value => onStatsChange(config.key, value)}
             step={1}
           />
         ))}
       </div>
-      
+
       <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
         <p>Adjust ranges to filter Pokémon by their base stats.</p>
-        <p>Total stats range from {stats.total.min} to {stats.total.max}.</p>
+        <p>
+          Total stats range from {stats.total.min} to {stats.total.max}.
+        </p>
       </div>
     </div>
   );

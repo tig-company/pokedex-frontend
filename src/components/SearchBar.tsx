@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useState, useRef, useEffect } from 'react';
 import { debounce, searchPokemon, type SearchResult } from '@/lib/pokemon-api';
 import { AutocompleteDropdown } from './AutocompleteDropdown';
 
@@ -11,7 +11,11 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
-export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pokémon..." }: SearchBarProps) {
+export function SearchBar({
+  onSearch,
+  onSelectPokemon,
+  placeholder = 'Search Pokémon...',
+}: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +49,7 @@ export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pok
     const newQuery = e.target.value;
     setQuery(newQuery);
     onSearch(newQuery);
-    
+
     if (newQuery.length >= 2) {
       setIsLoading(true);
       debouncedSearch(newQuery);
@@ -80,7 +84,10 @@ export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pok
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false);
       }
     };
@@ -93,9 +100,12 @@ export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pok
     <div ref={containerRef} className="relative w-full max-w-lg mx-auto">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+          <MagnifyingGlassIcon
+            className="h-5 w-5 text-gray-400"
+            aria-hidden="true"
+          />
         </div>
-        
+
         <input
           ref={inputRef}
           type="text"
@@ -104,7 +114,7 @@ export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pok
           onKeyDown={handleKeyDown}
           onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
           placeholder={placeholder}
-          className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
+          className="block w-full pl-10 pr-10 py-3 border border-gray-300 dark:border-gray-600 rounded-lg
                      bg-white dark:bg-gray-800 text-gray-900 dark:text-white
                      placeholder-gray-500 dark:placeholder-gray-400
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
@@ -116,11 +126,11 @@ export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pok
           aria-controls="autocomplete-dropdown"
           role="combobox"
         />
-        
+
         {(query || isLoading) && (
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
             {isLoading ? (
-              <div 
+              <div
                 className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"
                 aria-hidden="true"
                 role="status"
@@ -129,8 +139,8 @@ export function SearchBar({ onSearch, onSelectPokemon, placeholder = "Search Pok
             ) : (
               <button
                 onClick={handleClear}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 
-                           transition-colors duration-200 focus:outline-none focus:ring-2 
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300
+                           transition-colors duration-200 focus:outline-none focus:ring-2
                            focus:ring-blue-500 rounded-full p-1"
                 aria-label="Clear search"
                 type="button"

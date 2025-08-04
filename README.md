@@ -55,23 +55,26 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 This project includes a complete CI/CD pipeline with GitHub Actions:
 
 ### Continuous Integration (CI)
+
 - **Triggers**: On all pull requests to main branch
 - **Node.js Versions**: Tests on Node.js 18.x and 20.x
-- **Steps**: 
+- **Steps**:
   - Dependency installation with caching
   - ESLint code quality checks
   - Application build verification
   - Artifact upload for successful builds
 
 ### Continuous Deployment (CD)
+
 - **Triggers**: On pushes to main branch
 - **Target**: GitHub Pages
-- **Process**: 
+- **Process**:
   - Automated build with Next.js static export
   - Quality checks (linting)
   - Deployment to GitHub Pages with proper permissions
 
 ### Status Monitoring
+
 - Build status badges show current pipeline health
 - Failed builds prevent deployment
 - Automated rollback on deployment failures
@@ -83,6 +86,7 @@ This application is automatically deployed to GitHub Pages via GitHub Actions. E
 **Live URL**: [https://tig-company.github.io/pokedex-frontend/](https://tig-company.github.io/pokedex-frontend/)
 
 ### Manual Deployment
+
 To deploy manually or to other platforms:
 
 ```bash

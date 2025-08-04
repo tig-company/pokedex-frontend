@@ -50,8 +50,13 @@ export interface Pokemon {
   types: PokemonType[];
 }
 
-export async function getPokemonList(limit = 20, offset = 0): Promise<PokemonListResponse> {
-  const response = await fetch(`${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`);
+export async function getPokemonList(
+  limit = 20,
+  offset = 0,
+): Promise<PokemonListResponse> {
+  const response = await fetch(
+    `${BASE_URL}/pokemon?limit=${limit}&offset=${offset}`,
+  );
   if (!response.ok) {
     throw new Error('Failed to fetch Pokemon list');
   }
@@ -68,7 +73,10 @@ export async function getPokemon(nameOrId: string | number): Promise<Pokemon> {
 
 export function getPokemonIdFromUrl(url: string): number {
   const matches = url.match(/\/pokemon\/(\d+)\//);
-  return matches ? parseInt(matches[1], 10) : 0;
+  if (matches && matches[1]) {
+    return parseInt(matches[1], 10);
+  }
+  return 0;
 }
 
 export interface SearchResult {
@@ -81,13 +89,16 @@ export interface SearchResult {
 const searchCache = new Map<string, SearchResult[]>();
 let abortController: AbortController | null = null;
 
-export async function searchPokemon(query: string, limit = 5): Promise<SearchResult[]> {
+export async function searchPokemon(
+  query: string,
+  limit = 5,
+): Promise<SearchResult[]> {
   if (query.length < 2) {
     return [];
   }
 
   const normalizedQuery = query.toLowerCase().trim();
-  
+
   if (searchCache.has(normalizedQuery)) {
     return searchCache.get(normalizedQuery)!.slice(0, limit);
   }
@@ -99,30 +110,33 @@ export async function searchPokemon(query: string, limit = 5): Promise<SearchRes
 
   try {
     const listResponse = await fetch(`${BASE_URL}/pokemon?limit=1000`, {
-      signal: abortController.signal
+      signal: abortController.signal,
     });
-    
+
     if (!listResponse.ok) {
       throw new Error('Failed to fetch Pokemon list for search');
     }
-    
-    const { results } = await listResponse.json() as PokemonListResponse;
-    
-    const matchingPokemon = results.filter(pokemon => 
-      pokemon.name.toLowerCase().includes(normalizedQuery)
-    ).slice(0, limit);
+
+    const { results } = (await listResponse.json()) as PokemonListResponse;
+
+    const matchingPokemon = results
+      .filter(pokemon => pokemon.name.toLowerCase().includes(normalizedQuery))
+      .slice(0, limit);
 
     const searchResults = await Promise.all(
-      matchingPokemon.map(async (pokemon) => {
+      matchingPokemon.map(async pokemon => {
         const id = getPokemonIdFromUrl(pokemon.url);
         const details = await getPokemon(id);
         return {
           id,
           name: pokemon.name,
-          image: details.sprites.other['official-artwork'].front_default || details.sprites.front_default || '',
-          types: details.types.map(t => t.type.name)
+          image:
+            details.sprites.other['official-artwork'].front_default ||
+            details.sprites.front_default ||
+            '',
+          types: details.types.map(t => t.type.name),
         };
-      })
+      }),
     );
 
     searchCache.set(normalizedQuery, searchResults);
@@ -137,7 +151,7 @@ export async function searchPokemon(query: string, limit = 5): Promise<SearchRes
 
 export function debounce<T extends unknown[]>(
   func: (...args: T) => void | Promise<void>,
-  delay: number
+  delay: number,
 ): (...args: T) => void {
   let timeoutId: NodeJS.Timeout;
   return (...args: T) => {
@@ -211,15 +225,30 @@ export const POKEMON_GENERATIONS = {
 };
 
 export const POKEMON_TYPES = [
-  'normal', 'fire', 'water', 'electric', 'grass', 'ice',
-  'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug',
-  'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
+  'normal',
+  'fire',
+  'water',
+  'electric',
+  'grass',
+  'ice',
+  'fighting',
+  'poison',
+  'ground',
+  'flying',
+  'psychic',
+  'bug',
+  'rock',
+  'ghost',
+  'dragon',
+  'dark',
+  'steel',
+  'fairy',
 ];
 
 export function getPokemonGeneration(id: number): number {
   for (const [gen, data] of Object.entries(POKEMON_GENERATIONS)) {
     const [min, max] = data.range;
-    if (id >= min && id <= max) {
+    if (min !== undefined && max !== undefined && id >= min && id <= max) {
       return parseInt(gen);
     }
   }
@@ -236,16 +265,21 @@ export function getStatByName(stats: PokemonStat[], statName: string): number {
 }
 
 // Enhanced Pokemon fetching with full details for filtering
-export async function getPokemonWithDetails(id: number): Promise<PokemonWithDetails> {
+export async function getPokemonWithDetails(
+  id: number,
+): Promise<PokemonWithDetails> {
   const pokemon = await getPokemon(id);
-  
+
   return {
     id: pokemon.id,
     name: pokemon.name,
     height: pokemon.height,
     weight: pokemon.weight,
     base_experience: pokemon.base_experience,
-    image: pokemon.sprites.other['official-artwork'].front_default || pokemon.sprites.front_default || '',
+    image:
+      pokemon.sprites.other['official-artwork'].front_default ||
+      pokemon.sprites.front_default ||
+      '',
     types: pokemon.types.map(t => t.type.name),
     stats: pokemon.stats,
     generation: getPokemonGeneration(pokemon.id),
@@ -254,12 +288,15 @@ export async function getPokemonWithDetails(id: number): Promise<PokemonWithDeta
 }
 
 // Filtering function
-export function filterPokemon(pokemon: PokemonWithDetails[], filters: PokemonFilters): PokemonWithDetails[] {
+export function filterPokemon(
+  pokemon: PokemonWithDetails[],
+  filters: PokemonFilters,
+): PokemonWithDetails[] {
   return pokemon.filter(poke => {
     // Type filter
     if (filters.types.length > 0) {
-      const hasMatchingType = filters.types.some(filterType => 
-        poke.types.includes(filterType)
+      const hasMatchingType = filters.types.some(filterType =>
+        poke.types.includes(filterType),
       );
       if (!hasMatchingType) return false;
     }
@@ -278,16 +315,36 @@ export function filterPokemon(pokemon: PokemonWithDetails[], filters: PokemonFil
     const speed = getStatByName(poke.stats, 'speed');
 
     if (hp < filters.stats.hp.min || hp > filters.stats.hp.max) return false;
-    if (attack < filters.stats.attack.min || attack > filters.stats.attack.max) return false;
-    if (defense < filters.stats.defense.min || defense > filters.stats.defense.max) return false;
-    if (specialAttack < filters.stats.specialAttack.min || specialAttack > filters.stats.specialAttack.max) return false;
-    if (specialDefense < filters.stats.specialDefense.min || specialDefense > filters.stats.specialDefense.max) return false;
-    if (speed < filters.stats.speed.min || speed > filters.stats.speed.max) return false;
-    if (poke.totalStats < filters.stats.total.min || poke.totalStats > filters.stats.total.max) return false;
+    if (attack < filters.stats.attack.min || attack > filters.stats.attack.max)
+      return false;
+    if (
+      defense < filters.stats.defense.min ||
+      defense > filters.stats.defense.max
+    )
+      return false;
+    if (
+      specialAttack < filters.stats.specialAttack.min ||
+      specialAttack > filters.stats.specialAttack.max
+    )
+      return false;
+    if (
+      specialDefense < filters.stats.specialDefense.min ||
+      specialDefense > filters.stats.specialDefense.max
+    )
+      return false;
+    if (speed < filters.stats.speed.min || speed > filters.stats.speed.max)
+      return false;
+    if (
+      poke.totalStats < filters.stats.total.min ||
+      poke.totalStats > filters.stats.total.max
+    )
+      return false;
 
     // Physical attributes
-    if (poke.height < filters.height.min || poke.height > filters.height.max) return false;
-    if (poke.weight < filters.weight.min || poke.weight > filters.weight.max) return false;
+    if (poke.height < filters.height.min || poke.height > filters.height.max)
+      return false;
+    if (poke.weight < filters.weight.min || poke.weight > filters.weight.max)
+      return false;
 
     return true;
   });

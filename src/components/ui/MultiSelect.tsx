@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useState, useRef, useEffect } from 'react';
 
 interface MultiSelectOption {
   value: string;
@@ -31,7 +31,10 @@ export function MultiSelect({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -51,7 +54,9 @@ export function MultiSelect({
     onChange(value.filter(v => v !== optionValue));
   };
 
-  const selectedOptions = options.filter(option => value.includes(option.value));
+  const selectedOptions = options.filter(option =>
+    value.includes(option.value),
+  );
   const displayedItems = selectedOptions.slice(0, maxDisplayedItems);
   const remainingCount = selectedOptions.length - maxDisplayedItems;
 
@@ -62,12 +67,12 @@ export function MultiSelect({
           {label}
         </label>
       )}
-      
+
       <div ref={containerRef} className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full min-h-[42px] px-3 py-2 text-left bg-white dark:bg-gray-800 
+          className="w-full min-h-[42px] px-3 py-2 text-left bg-white dark:bg-gray-800
                      border border-gray-300 dark:border-gray-600 rounded-lg
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
@@ -76,10 +81,12 @@ export function MultiSelect({
         >
           <div className="flex flex-wrap gap-1 min-h-[26px] items-center">
             {selectedOptions.length === 0 ? (
-              <span className="text-gray-500 dark:text-gray-400">{placeholder}</span>
+              <span className="text-gray-500 dark:text-gray-400">
+                {placeholder}
+              </span>
             ) : (
               <>
-                {displayedItems.map((option) => (
+                {displayedItems.map(option => (
                   <span
                     key={option.value}
                     className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium 
@@ -88,7 +95,7 @@ export function MultiSelect({
                     {option.label}
                     <button
                       type="button"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleRemoveItem(option.value);
                       }}
@@ -100,26 +107,30 @@ export function MultiSelect({
                   </span>
                 ))}
                 {remainingCount > 0 && (
-                  <span className="px-2 py-1 text-xs text-gray-600 dark:text-gray-400 
-                                   bg-gray-100 dark:bg-gray-700 rounded-full">
+                  <span
+                    className="px-2 py-1 text-xs text-gray-600 dark:text-gray-400
+                                   bg-gray-100 dark:bg-gray-700 rounded-full"
+                  >
                     +{remainingCount} more
                   </span>
                 )}
               </>
             )}
           </div>
-          
-          <ChevronDownIcon 
+
+          <ChevronDownIcon
             className={`absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 
                        text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           />
         </button>
 
         {isOpen && (
-          <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 
-                          border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg 
-                          max-h-60 overflow-y-auto">
-            {options.map((option) => {
+          <div
+            className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800
+                          border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg
+                          max-h-60 overflow-y-auto"
+          >
+            {options.map(option => {
               const isSelected = value.includes(option.value);
               return (
                 <button
@@ -134,8 +145,8 @@ export function MultiSelect({
                 >
                   <div className="flex items-center gap-2">
                     {option.color && (
-                      <div 
-                        className={`w-4 h-4 rounded-full ${option.color}`} 
+                      <div
+                        className={`w-4 h-4 rounded-full ${option.color}`}
                         aria-hidden="true"
                       />
                     )}
@@ -143,19 +154,21 @@ export function MultiSelect({
                       {option.label}
                     </span>
                   </div>
-                  
+
                   {isSelected && (
-                    <div className="w-4 h-4 rounded border-2 border-blue-500 bg-blue-500 
-                                    flex items-center justify-center">
-                      <svg 
-                        className="w-2 h-2 text-white" 
-                        fill="currentColor" 
+                    <div
+                      className="w-4 h-4 rounded border-2 border-blue-500 bg-blue-500
+                                    flex items-center justify-center"
+                    >
+                      <svg
+                        className="w-2 h-2 text-white"
+                        fill="currentColor"
                         viewBox="0 0 20 20"
                       >
-                        <path 
-                          fillRule="evenodd" 
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                          clipRule="evenodd" 
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
                         />
                       </svg>
                     </div>

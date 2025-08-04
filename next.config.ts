@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 // Function to determine the correct base path based on environment
 function getBasePath(): string {
@@ -6,12 +6,12 @@ function getBasePath(): string {
   if (process.env.PR_PREVIEW === 'true' && process.env.PR_NUMBER) {
     return `/pokedex-frontend/pr-${process.env.PR_NUMBER}`;
   }
-  
+
   // For production GitHub Pages deployment
   if (process.env.GITHUB_PAGES === 'true') {
     return '/pokedex-frontend';
   }
-  
+
   // For local development
   return '';
 }

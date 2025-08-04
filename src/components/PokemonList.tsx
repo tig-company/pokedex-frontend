@@ -1,20 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
-import { getPokemonList, getPokemonWithDetails, getPokemonIdFromUrl, type PokemonListItem, type PokemonWithDetails } from '@/lib/pokemon-api';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import {
+  getPokemonList,
+  getPokemonWithDetails,
+  getPokemonIdFromUrl,
+  type PokemonListItem,
+  type PokemonWithDetails,
+} from '@/lib/pokemon-api';
 
 interface PokemonListProps {
   searchQuery?: string;
-  filteredPokemon?: PokemonWithDetails[];
+  filteredPokemon: PokemonWithDetails[];
   isFiltering?: boolean;
 }
 
-export function PokemonList({ searchQuery = '', filteredPokemon: externalFilteredPokemon, isFiltering = false }: PokemonListProps) {
+export function PokemonList({
+  searchQuery = '',
+  filteredPokemon: externalFilteredPokemon,
+  isFiltering = false,
+}: PokemonListProps) {
   const [pokemon, setPokemon] = useState<PokemonWithDetails[]>([]);
-  const [filteredPokemon, setFilteredPokemon] = useState<PokemonWithDetails[]>([]);
+  const [filteredPokemon, setFilteredPokemon] = useState<PokemonWithDetails[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
@@ -24,12 +36,12 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
     try {
       setLoading(true);
       const listResponse = await getPokemonList(20, currentOffset);
-      
+
       const pokemonWithDetails = await Promise.all(
         listResponse.results.map(async (item: PokemonListItem) => {
           const id = getPokemonIdFromUrl(item.url);
           return await getPokemonWithDetails(id);
-        })
+        }),
       );
 
       if (currentOffset === 0) {
@@ -37,7 +49,7 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
       } else {
         setPokemon(prev => [...prev, ...pokemonWithDetails]);
       }
-      
+
       setHasMore(listResponse.next !== null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load Pokemon');
@@ -51,14 +63,17 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
   }, []);
 
   useEffect(() => {
-    if (isFiltering && externalFilteredPokemon) {
+    if (isFiltering && externalFilteredPokemon.length > 0) {
       // When filtering is active, use externally filtered Pokemon
       if (!searchQuery.trim()) {
         setFilteredPokemon(externalFilteredPokemon);
       } else {
-        const searchFiltered = externalFilteredPokemon.filter(poke => 
-          poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          poke.types.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
+        const searchFiltered = externalFilteredPokemon.filter(
+          poke =>
+            poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            poke.types.some(type =>
+              type.toLowerCase().includes(searchQuery.toLowerCase()),
+            ),
         );
         setFilteredPokemon(searchFiltered);
       }
@@ -67,9 +82,12 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
       if (!searchQuery.trim()) {
         setFilteredPokemon(pokemon);
       } else {
-        const filtered = pokemon.filter(poke => 
-          poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          poke.types.some(type => type.toLowerCase().includes(searchQuery.toLowerCase()))
+        const filtered = pokemon.filter(
+          poke =>
+            poke.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            poke.types.some(type =>
+              type.toLowerCase().includes(searchQuery.toLowerCase()),
+            ),
         );
         setFilteredPokemon(filtered);
       }
@@ -119,7 +137,7 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
     return (
       <div className="text-center py-12">
         <p className="text-red-600 dark:text-red-400 text-lg">Error: {error}</p>
-        <button 
+        <button
           onClick={() => loadPokemon(0)}
           className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
@@ -134,23 +152,23 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
       {(isSearchActive || isFiltering) && (
         <div className="mb-6">
           <p className="text-gray-600 dark:text-gray-400 text-center">
-            {displayPokemon.length === 0 ? (
-              isSearchActive ? `No Pokémon found matching "${searchQuery}"` : 'No Pokémon match your filters'
-            ) : (
-              isSearchActive 
+            {displayPokemon.length === 0
+              ? isSearchActive
+                ? `No Pokémon found matching "${searchQuery}"`
+                : 'No Pokémon match your filters'
+              : isSearchActive
                 ? `Found ${displayPokemon.length} Pokémon matching "${searchQuery}"`
-                : `${displayPokemon.length} Pokémon match your filters`
-            )}
+                : `${displayPokemon.length} Pokémon match your filters`}
           </p>
         </div>
       )}
 
-      <div 
+      <div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
         role="grid"
         aria-label="Pokemon list"
       >
-        {displayPokemon.map((poke) => (
+        {displayPokemon.map(poke => (
           <Link
             key={poke.id}
             href={`/pokemon/${poke.id}`}
@@ -168,7 +186,7 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
                   />
                 )}
               </div>
-              
+
               <div className="text-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                   #{poke.id.toString().padStart(3, '0')}
@@ -176,9 +194,9 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white capitalize mb-2">
                   {poke.name}
                 </h3>
-                
+
                 <div className="flex flex-wrap justify-center gap-1">
-                  {poke.types.map((type) => (
+                  {poke.types.map(type => (
                     <span
                       key={type}
                       className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getTypeColor(type)}`}
@@ -194,7 +212,7 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
       </div>
 
       {showInfiniteScroll && (
-        <div 
+        <div
           ref={sentinelRef}
           className="flex justify-center items-center py-12"
           aria-label="Loading more Pokemon"
@@ -203,22 +221,20 @@ export function PokemonList({ searchQuery = '', filteredPokemon: externalFiltere
         >
           {loading && (
             <>
-              <div 
+              <div
                 className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
                 aria-hidden="true"
               ></div>
-              <p className="ml-4 text-gray-600 dark:text-gray-400">Loading more Pokémon...</p>
+              <p className="ml-4 text-gray-600 dark:text-gray-400">
+                Loading more Pokémon...
+              </p>
             </>
           )}
         </div>
       )}
 
       {!loading && !hasMore && !isSearchActive && !isFiltering && (
-        <div 
-          className="text-center mt-12"
-          role="status"
-          aria-live="polite"
-        >
+        <div className="text-center mt-12" role="status" aria-live="polite">
           <p className="text-gray-600 dark:text-gray-400">
             You&apos;ve seen all the Pokémon! 🎉
           </p>
