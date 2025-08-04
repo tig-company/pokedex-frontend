@@ -14,6 +14,8 @@ export async function generateStaticParams() {
   }));
 }
 
+// Test
+
 export default async function PokemonPage({ params }: PokemonPageProps) {
   const { id } = await params;
 
