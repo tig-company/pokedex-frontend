@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { type SearchResult } from '@/lib/pokemon-api';
 
 interface AutocompleteDropdownProps {
@@ -10,7 +10,11 @@ interface AutocompleteDropdownProps {
   query: string;
 }
 
-export function AutocompleteDropdown({ suggestions, onSelect, query }: AutocompleteDropdownProps) {
+export function AutocompleteDropdown({
+  suggestions,
+  onSelect,
+  query,
+}: AutocompleteDropdownProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const getTypeColor = (type: string) => {
@@ -39,18 +43,21 @@ export function AutocompleteDropdown({ suggestions, onSelect, query }: Autocompl
 
   const highlightMatch = (text: string, query: string) => {
     if (!query) return text;
-    
+
     const regex = new RegExp(`(${query})`, 'gi');
     const parts = text.split(regex);
-    
-    return parts.map((part, index) => 
+
+    return parts.map((part, index) =>
       regex.test(part) ? (
-        <mark key={index} className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-white">
+        <mark
+          key={index}
+          className="bg-yellow-200 dark:bg-yellow-600 text-gray-900 dark:text-white"
+        >
           {part}
         </mark>
       ) : (
         part
-      )
+      ),
     );
   };
 
@@ -63,18 +70,21 @@ export function AutocompleteDropdown({ suggestions, onSelect, query }: Autocompl
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
-          setSelectedIndex(prev => 
-            prev < suggestions.length - 1 ? prev + 1 : prev
+          setSelectedIndex(prev =>
+            prev < suggestions.length - 1 ? prev + 1 : prev,
           );
           break;
         case 'ArrowUp':
           e.preventDefault();
-          setSelectedIndex(prev => prev > 0 ? prev - 1 : prev);
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
           break;
         case 'Enter':
           e.preventDefault();
           if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
-            onSelect(suggestions[selectedIndex]);
+            const selectedPokemon = suggestions[selectedIndex];
+            if (selectedPokemon) {
+              onSelect(selectedPokemon);
+            }
           }
           break;
         case 'Escape':
@@ -92,10 +102,10 @@ export function AutocompleteDropdown({ suggestions, onSelect, query }: Autocompl
   }
 
   return (
-    <div 
+    <div
       id="autocomplete-dropdown"
-      className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-gray-800 
-                 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg 
+      className="absolute top-full left-0 right-0 z-50 mt-1 bg-white dark:bg-gray-800
+                 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg
                  overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200"
       role="listbox"
       aria-label="Search suggestions"
@@ -123,7 +133,7 @@ export function AutocompleteDropdown({ suggestions, onSelect, query }: Autocompl
               />
             )}
           </div>
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
               <div>
@@ -134,9 +144,9 @@ export function AutocompleteDropdown({ suggestions, onSelect, query }: Autocompl
                   #{pokemon.id.toString().padStart(3, '0')}
                 </p>
               </div>
-              
+
               <div className="flex flex-wrap gap-1 ml-2">
-                {pokemon.types.slice(0, 2).map((type) => (
+                {pokemon.types.slice(0, 2).map(type => (
                   <span
                     key={type}
                     className={`px-2 py-1 text-xs font-medium text-white rounded-full ${getTypeColor(type)}`}

@@ -1,13 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { FilterSidepanel } from '@/components/filters/FilterSidepanel';
 import { PokemonList } from '@/components/PokemonList';
 import { SearchBar } from '@/components/SearchBar';
-import { FilterSidepanel } from '@/components/filters/FilterSidepanel';
 import { useFilters } from '@/hooks/useFilters';
-import { type SearchResult, type PokemonWithDetails, getPokemonList, getPokemonWithDetails, getPokemonIdFromUrl } from '@/lib/pokemon-api';
+import {
+  type SearchResult,
+  type PokemonWithDetails,
+  getPokemonList,
+  getPokemonWithDetails,
+  getPokemonIdFromUrl,
+} from '@/lib/pokemon-api';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,22 +22,29 @@ export default function Home() {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const router = useRouter();
 
-  const { filters, filteredPokemon, updateFilters, hasActiveFilters, resultsCount } = useFilters(allPokemon);
+  const {
+    filters,
+    filteredPokemon,
+    updateFilters,
+    hasActiveFilters,
+    resultsCount,
+  } = useFilters(allPokemon);
 
   // Load all Pokemon for filtering (first 151 for performance)
   useEffect(() => {
     const loadAllPokemon = async () => {
       try {
         setLoading(true);
-        const listResponse = await getPokemonList(151, 0); // Load first 151 Pokemon
-        
+        // Load first 151 Pokemon for performance
+        const listResponse = await getPokemonList(151, 0);
+
         const pokemonWithDetails = await Promise.all(
-          listResponse.results.map(async (item) => {
+          listResponse.results.map(async item => {
             const id = getPokemonIdFromUrl(item.url);
             return await getPokemonWithDetails(id);
-          })
+          }),
         );
-        
+
         setAllPokemon(pokemonWithDetails);
       } catch (error) {
         console.error('Failed to load Pokemon for filtering:', error);
@@ -62,7 +75,7 @@ export default function Home() {
           onClose={() => setIsFilterPanelOpen(false)}
           resultsCount={resultsCount}
         />
-        
+
         {/* Main Content */}
         <div className="flex-1 lg:ml-0 overflow-y-auto">
           <div className="container mx-auto px-4 py-8">
@@ -74,24 +87,28 @@ export default function Home() {
                 Discover and explore the world of Pokémon
               </p>
             </header>
-            
+
             {/* Search and Filter Controls */}
             <div className="mb-8 space-y-4">
               <div className="flex gap-4 items-center">
                 <div className="flex-1">
-                  <SearchBar 
+                  <SearchBar
                     onSearch={handleSearch}
                     onSelectPokemon={handleSelectPokemon}
                     placeholder="Search Pokémon..."
                   />
                 </div>
-                
+
                 <button
                   onClick={() => setIsFilterPanelOpen(true)}
-                  className={`lg:hidden px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600
-                             bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300
-                             hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
-                             flex items-center gap-2 ${hasActiveFilters ? 'ring-2 ring-blue-500' : ''}`}
+                  className={`lg:hidden px-4 py-3 rounded-lg border 
+                             border-gray-300 dark:border-gray-600
+                             bg-white dark:bg-gray-800 
+                             text-gray-700 dark:text-gray-300
+                             hover:bg-gray-50 dark:hover:bg-gray-700 
+                             transition-colors flex items-center gap-2 ${
+    hasActiveFilters ? 'ring-2 ring-blue-500' : ''
+    }`}
                   aria-label="Open filters"
                 >
                   <AdjustmentsHorizontalIcon className="h-5 w-5" />
@@ -103,7 +120,7 @@ export default function Home() {
                   )}
                 </button>
               </div>
-              
+
               {hasActiveFilters && (
                 <div className="text-center">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -112,18 +129,20 @@ export default function Home() {
                 </div>
               )}
             </div>
-            
+
             {/* Loading State */}
             {loading ? (
               <div className="flex justify-center items-center py-12">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-                <p className="ml-4 text-gray-600 dark:text-gray-400">Loading Pokémon...</p>
+                <p className="ml-4 text-gray-600 dark:text-gray-400">
+                  Loading Pokémon...
+                </p>
               </div>
             ) : (
               <main>
-                <PokemonList 
+                <PokemonList
                   searchQuery={searchQuery}
-                  filteredPokemon={hasActiveFilters ? filteredPokemon : undefined}
+                  filteredPokemon={hasActiveFilters ? filteredPokemon : []}
                   isFiltering={hasActiveFilters}
                 />
               </main>

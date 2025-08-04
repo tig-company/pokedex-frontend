@@ -11,11 +11,11 @@ Follow these steps to create a GitHub issue:
 1. Analyze the feature description carefully. Identify the main components of the feature, its purpose, and any implicit requirements.
 
 2. Structure the GitHub issue with the following sections:
-    a. Title: Create a concise, descriptive title for the issue.
-    b. Description: Provide a detailed explanation of the feature, including its purpose and benefits.
-    c. Acceptance Criteria: List specific, measurable criteria that define when the feature is complete.
-    d. Technical Considerations: Mention any technical aspects or potential challenges to consider during implementation.
-    e. Additional Notes: Include any extra information, suggestions or resources that might be helpful.
+   a. Title: Create a concise, descriptive title for the issue.
+   b. Description: Provide a detailed explanation of the feature, including its purpose and benefits.
+   c. Acceptance Criteria: List specific, measurable criteria that define when the feature is complete.
+   d. Technical Considerations: Mention any technical aspects or potential challenges to consider during implementation.
+   e. Additional Notes: Include any extra information, suggestions or resources that might be helpful.
 
 3. Use clear, consise language throughout the issue. Avoid jargon unless it's necessary for technical accuracy.
 

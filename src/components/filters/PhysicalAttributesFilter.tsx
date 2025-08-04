@@ -33,7 +33,7 @@ export function PhysicalAttributesFilter({
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
         Physical Attributes
       </h3>
-      
+
       <div className="space-y-4">
         <RangeSlider
           min={0}
@@ -44,7 +44,7 @@ export function PhysicalAttributesFilter({
           formatValue={formatHeight}
           step={1}
         />
-        
+
         <RangeSlider
           min={0}
           max={1000}
@@ -55,11 +55,17 @@ export function PhysicalAttributesFilter({
           step={1}
         />
       </div>
-      
+
       <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
         <p>Filter Pokémon by their physical characteristics.</p>
-        <p>Heights range from {formatHeight(height.min)} to {formatHeight(height.max)}.</p>
-        <p>Weights range from {formatWeight(weight.min)} to {formatWeight(weight.max)}.</p>
+        <p>
+          Heights range from {formatHeight(height.min)} to{' '}
+          {formatHeight(height.max)}.
+        </p>
+        <p>
+          Weights range from {formatWeight(weight.min)} to{' '}
+          {formatWeight(weight.max)}.
+        </p>
       </div>
     </div>
   );

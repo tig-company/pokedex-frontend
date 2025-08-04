@@ -1,7 +1,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { type PokemonFilters, type PokemonWithDetails, defaultFilters, filterPokemon } from '@/lib/pokemon-api';
+import {
+  type PokemonFilters,
+  type PokemonWithDetails,
+  defaultFilters,
+  filterPokemon,
+} from '@/lib/pokemon-api';
 
 export function useFilters(pokemon: PokemonWithDetails[]) {
   const [filters, setFilters] = useState<PokemonFilters>(defaultFilters);
@@ -23,7 +28,8 @@ export function useFilters(pokemon: PokemonWithDetails[]) {
       filters.types.length > 0 ||
       filters.generation !== null ||
       JSON.stringify(filters.stats) !== JSON.stringify(defaultFilters.stats) ||
-      JSON.stringify(filters.height) !== JSON.stringify(defaultFilters.height) ||
+      JSON.stringify(filters.height) !==
+        JSON.stringify(defaultFilters.height) ||
       JSON.stringify(filters.weight) !== JSON.stringify(defaultFilters.weight)
     );
   }, [filters]);
